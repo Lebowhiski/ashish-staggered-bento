@@ -7,14 +7,24 @@ import artwork4 from "@/assets/artwork-4.jpg";
 import artwork5 from "@/assets/artwork-5.jpg";
 import artwork6 from "@/assets/artwork-6.jpg";
 
-const artworks = [
+interface Artwork {
+  id: number;
+  src: string;
+  title: string;
+  year: string;
+  medium: string;
+  aspectRatio: number;
+  calculatedHeight?: number;
+}
+
+const artworks: Artwork[] = [
   {
     id: 1,
     src: artwork1,
     title: "Organic Flow",
     year: "2024",
     medium: "Digital Art",
-    height: 300
+    aspectRatio: 16/9 // width/height
   },
   {
     id: 2,
@@ -22,7 +32,7 @@ const artworks = [
     title: "Geometric Harmony",
     year: "2024",
     medium: "Mixed Media",
-    height: 400
+    aspectRatio: 1/1 // square
   },
   {
     id: 3,
@@ -30,7 +40,7 @@ const artworks = [
     title: "Vibrant Expression",
     year: "2023",
     medium: "Acrylic on Canvas",
-    height: 500
+    aspectRatio: 3/4 // portrait
   },
   {
     id: 4,
@@ -38,7 +48,7 @@ const artworks = [
     title: "Dreamscape",
     year: "2024",
     medium: "Digital Photography",
-    height: 350
+    aspectRatio: 8/5 // landscape
   },
   {
     id: 5,
@@ -46,7 +56,7 @@ const artworks = [
     title: "Textural Layers",
     year: "2023",
     medium: "Collage",
-    height: 450
+    aspectRatio: 1/1 // square
   },
   {
     id: 6,
@@ -54,7 +64,7 @@ const artworks = [
     title: "Light & Shadow",
     year: "2024",
     medium: "Photography",
-    height: 600
+    aspectRatio: 2/3 // portrait
   }
 ];
 
@@ -87,13 +97,19 @@ const BentoGrid = () => {
   };
 
   const distributeArtworks = () => {
-    const distributedColumns = Array.from({ length: columns }, () => [] as typeof artworks);
+    const distributedColumns = Array.from({ length: columns }, () => [] as Artwork[]);
     const heights = Array(columns).fill(0);
+    const baseWidth = 300; // Base width for calculations
 
     artworks.forEach((artwork) => {
       const shortestIndex = heights.indexOf(Math.min(...heights));
-      distributedColumns[shortestIndex].push(artwork);
-      heights[shortestIndex] += artwork.height + 24; // Add gap
+      const calculatedHeight = baseWidth / artwork.aspectRatio;
+      
+      distributedColumns[shortestIndex].push({
+        ...artwork,
+        calculatedHeight
+      });
+      heights[shortestIndex] += calculatedHeight + 24; // Add gap
     });
 
     return distributedColumns;
@@ -113,7 +129,7 @@ const BentoGrid = () => {
               {columnArtworks.map((artwork) => (
                 <div
                   key={artwork.id}
-                  style={{ height: `${artwork.height}px` }}
+                  style={{ height: `${artwork.calculatedHeight}px` }}
                 >
                   <ArtworkTile
                     src={artwork.src}
