@@ -52,6 +52,18 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				gallery: {
+					bg: 'hsl(var(--gallery-bg))',
+					tile: 'hsl(var(--tile-bg))',
+					'tile-hover': 'hsl(var(--tile-hover))'
+				},
+				text: {
+					primary: 'hsl(var(--text-primary))',
+					secondary: 'hsl(var(--text-secondary))'
+				},
+				social: {
+					hover: 'hsl(var(--social-hover))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
