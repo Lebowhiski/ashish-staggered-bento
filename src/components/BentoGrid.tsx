@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import ArtworkTile from "./ArtworkTile";
 import artwork1 from "@/assets/artwork-1.jpg";
 import artwork2 from "@/assets/artwork-2.jpg";
@@ -13,7 +14,7 @@ const artworks = [
     title: "Organic Flow",
     year: "2024",
     medium: "Digital Art",
-    className: "aspect-video"
+    height: 300
   },
   {
     id: 2,
@@ -21,7 +22,7 @@ const artworks = [
     title: "Geometric Harmony",
     year: "2024",
     medium: "Mixed Media",
-    className: "aspect-square"
+    height: 400
   },
   {
     id: 3,
@@ -29,7 +30,7 @@ const artworks = [
     title: "Vibrant Expression",
     year: "2023",
     medium: "Acrylic on Canvas",
-    className: "aspect-[3/4]"
+    height: 500
   },
   {
     id: 4,
@@ -37,7 +38,7 @@ const artworks = [
     title: "Dreamscape",
     year: "2024",
     medium: "Digital Photography",
-    className: "aspect-[8/5]"
+    height: 350
   },
   {
     id: 5,
@@ -45,7 +46,7 @@ const artworks = [
     title: "Textural Layers",
     year: "2023",
     medium: "Collage",
-    className: "aspect-square"
+    height: 450
   },
   {
     id: 6,
@@ -53,29 +54,80 @@ const artworks = [
     title: "Light & Shadow",
     year: "2024",
     medium: "Photography",
-    className: "aspect-[2/3]"
+    height: 600
   }
 ];
 
 const BentoGrid = () => {
+  const [columns, setColumns] = useState<number>(3);
+  const [columnHeights, setColumnHeights] = useState<number[]>([0, 0, 0]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setColumns(1);
+        setColumnHeights([0]);
+      } else if (width < 1024) {
+        setColumns(2);
+        setColumnHeights([0, 0]);
+      } else {
+        setColumns(3);
+        setColumnHeights([0, 0, 0]);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getShortestColumnIndex = () => {
+    return columnHeights.indexOf(Math.min(...columnHeights));
+  };
+
+  const distributeArtworks = () => {
+    const distributedColumns = Array.from({ length: columns }, () => [] as typeof artworks);
+    const heights = Array(columns).fill(0);
+
+    artworks.forEach((artwork) => {
+      const shortestIndex = heights.indexOf(Math.min(...heights));
+      distributedColumns[shortestIndex].push(artwork);
+      heights[shortestIndex] += artwork.height + 24; // Add gap
+    });
+
+    return distributedColumns;
+  };
+
+  const artworkColumns = distributeArtworks();
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8 pt-24">
-      {artworks.map((artwork, index) => (
-        <div
-          key={artwork.id}
-          className={`${
-            index % 3 === 1 ? 'lg:mt-12' : index % 3 === 2 ? 'lg:mt-24' : ''
-          }`}
-        >
-          <ArtworkTile
-            src={artwork.src}
-            title={artwork.title}
-            year={artwork.year}
-            medium={artwork.medium}
-            className={artwork.className}
-          />
+    <div className="p-8 pt-24">
+      <div className="max-w-7xl mx-auto">
+        <div className={`flex gap-6 ${columns === 1 ? 'flex-col' : ''}`}>
+          {artworkColumns.map((columnArtworks, columnIndex) => (
+            <div
+              key={columnIndex}
+              className="flex-1 flex flex-col gap-6"
+            >
+              {columnArtworks.map((artwork) => (
+                <div
+                  key={artwork.id}
+                  style={{ height: `${artwork.height}px` }}
+                >
+                  <ArtworkTile
+                    src={artwork.src}
+                    title={artwork.title}
+                    year={artwork.year}
+                    medium={artwork.medium}
+                    className="h-full"
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
