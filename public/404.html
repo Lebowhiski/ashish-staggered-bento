@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ashish-staggered-bento</title>
+    <script>
+      // Redirect all 404s to index.html for client-side routing
+      const path = window.location.pathname.slice(1);
+      if (path && path !== 'index.html') {
+        window.history.replaceState(null, null, 
+          window.location.origin + '/ashish-staggered-bento/' + 
+          '?redirect=' + encodeURIComponent(path)
+        );
+      }
+      window.location.href = window.location.origin + '/ashish-staggered-bento/';
+    </script>
+  </head>
+  <body>
+    <div>Redirecting...</div>
+  </body>
+</html>
